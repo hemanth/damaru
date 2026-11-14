@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Damaru — Interactive 3D Hourglass Drum</title>
+  <meta name="description" content="Play a realistic 3D Indian Damaru in your browser. Click, drag, flick, or shake at any velocity with real-time XPBD cord physics and Bessel-mode WebAudio synthesis." />
+  <meta name="theme-color" content="#0b0a09" />
+  <style>
+    html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0b0a09;color:#f5f2eb}
+    main#stage{width:100vw;height:100dvh;background:radial-gradient(circle at 50% 44%,#1c1713 0%,#0b0a09 74%)}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    dialog:not([open]){display:none}
+    .corner-controls{position:fixed;right:14px;bottom:14px;display:flex;gap:2px}
+    .corner-btn{width:44px;height:44px;padding:0;border:none;background:transparent;color:rgba(245,242,235,.76)}
+    #damaru-canvas{opacity:0;transition:opacity 240ms ease-out}
+    #damaru-canvas.is-ready{opacity:1}
+  </style>
+
+  <!-- Open Graph -->
+  <link rel="canonical" href="https://h3manth.com/fun/damaru/" />
+  <meta property="og:url" content="https://h3manth.com/fun/damaru/" />
+  <meta property="og:title" content="Damaru — Interactive 3D Hourglass Drum" />
+  <meta property="og:description" content="Click, drag, or shake a physically simulated 3D Damaru with velocity-coupled braided striker cords and Bessel-mode goatskin membrane synthesis." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://h3manth.com/fun/damaru/og.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="3D rosewood and goatskin Damaru hourglass drum with braided cotton tension cords and lac striker beads" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Damaru — Interactive 3D Hourglass Drum" />
+  <meta name="twitter:description" content="Click, drag, or shake a physically simulated 3D Damaru with real-time XPBD cord physics and physical-modeling WebAudio." />
+  <meta name="twitter:image" content="https://h3manth.com/fun/damaru/og.png" />
+
+  <!-- Inline Vector Damaru Icon (zero extra HTTP roundtrip / zero 404) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312100e'/%3E%3Cpath d='M16 14h32L36 32l12 18H16l12-18Z' fill='%238c4a27' stroke='%23e8d5b5' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cline x1='26' y1='32' x2='38' y2='32' stroke='%23c82822' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='38' r='3.2' fill='%23e8d5b5'/%3E%3Ccircle cx='51' cy='26' r='3.2' fill='%23e8d5b5'/%3E%3C/svg%3E" />
+
+  <!-- Agent-Ready & LLM Discovery Links (RFC 9727 / SEP-1649 / A2A / llmstxt.org) -->
+  <link rel="llms" href="/llms.txt" type="text/plain" />
+  <link rel="api-catalog" href="/.well-known/api-catalog" type="application/linkset+json" />
+  <link rel="service-desc" href="/.well-known/agent-skills/index.json" type="application/json" />
+  <link rel="describedby" href="/.well-known/mcp/server-card.json" type="application/json" />
+  <link rel="describedby" href="/.well-known/agent-card.json" type="application/json" />
+  <link rel="describedby" href="/llms.txt" type="text/plain" />
+
+  <!-- Schema.org Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Damaru",
+    "description": "Interactive 3D Indian Damaru hourglass drum with sub-stepped XPBD striker cord physics, Bessel-mode circular membrane deformation, and velocity-coupled physical-modeling WebAudio synthesis.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web",
+    "inLanguage": ["en"],
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Hemanth HM", "url": "https://h3manth.com" },
+    "featureList": [
+      "Three.js PBR lathe-turned rosewood, antique brass, V-laced cotton cords, and goatskin parchment drumheads",
+      "360 Hz sub-stepped XPBD braided striker cords with continuous capped-hourglass SDF collision",
+      "Velocity-matched Bessel-mode circular membrane + Helmholtz cavity WebAudio physical modeling",
+      "Mobile responsive touch, two-finger waist-cord pitch bend, and DeviceMotion physical phone shake",
+      "WebMCP and window.damaruAgent programmatic tools for autonomous AI agents"
+    ]
+  }
+  </script>
+</head>
+<body>
+  <main id="stage">
+    <h1 class="sr-only">Damaru — Interactive 3D Hourglass Drum</h1>
+    <canvas
+      id="damaru-canvas"
+      tabindex="0"
+      role="application"
+      aria-label="Interactive 3D Damaru drum. Click or tap drumheads to strike, drag or shake rapidly to whip the beaded cords at your velocity, or hold Space to squeeze the waist cords and bend pitch."
+    ></canvas>
+
+    <div class="corner-controls" aria-label="Instrument controls">
+      <button
+        type="button"
+        id="autoplay-trigger"
+        class="corner-btn"
+        aria-label="Toggle Auto Play"
+        aria-pressed="false"
+        title="Auto Play (A)"
+      >
+        <span class="corner-glyph" aria-hidden="true">
+          <svg class="icon-play" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <polygon points="7 4 20 12 7 20 7 4" />
+          </svg>
+          <svg class="icon-stop" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <rect x="5" y="5" width="14" height="14" rx="2" />
+          </svg>
+        </span>
+      </button>
+
+      <button
+        type="button"
+        id="info-trigger"
+        class="corner-btn"
+        aria-label="About Damaru and how to play"
+        aria-haspopup="dialog"
+        title="About Damaru (?)"
+      >
+        <span class="corner-glyph" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
+        </span>
+      </button>
+    </div>
+
+    <dialog id="info-dialog" aria-labelledby="info-dialog-title">
+      <div class="dialog-header">
+        <div>
+          <h2 id="info-dialog-title" class="dialog-title">
+            Damaru <span class="dialog-subtitle">डमरु · 3D Acoustic Physics</span>
+          </h2>
+        </div>
+        <button type="button" id="info-close" class="dialog-close" aria-label="Close information dialog">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <p class="dialog-copy">
+        The <strong>damaru</strong> is an ancient two-headed hourglass pressure drum from India and the Himalayas. Rotating the narrow waist whips two knotted cords so their hard lac beads (<em>goli</em>) strike opposing goatskin membranes in rapid alternation, while squeezing the V-laced waist cords raises membrane tension and pitch.
+      </p>
+
+      <ul class="gesture-list">
+        <li>
+          <span class="gesture-key">Drag / Shake</span>
+          <span class="gesture-desc">Drag or wiggle horizontally or vertically — faster wrist velocity whips both beaded cords harder and faster across the heads.</span>
+        </li>
+        <li>
+          <span class="gesture-key">Tap / Click</span>
+          <span class="gesture-desc">Strike either goatskin head directly (center for warm resonant <em>Dam</em>, rim for crisp <em>Ta</em>).</span>
+        </li>
+        <li>
+          <span class="gesture-key">Hold Space</span>
+          <span class="gesture-desc">Or pinch with two fingers to cinch the V-laced waist cords and bend pitch upward in real time.</span>
+        </li>
+        <li>
+          <span class="gesture-key">Phone / Keys</span>
+          <span class="gesture-desc">Shake your phone physically, or press <code>F</code> / <code>J</code>, <code>←</code> / <code>→</code>, <code>R</code> (roll), and <code>A</code> (auto play).</span>
+        </li>
+      </ul>
+
+      <div class="dialog-actions">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" id="btn-demo-roll" class="studio-btn primary">
+            Start Auto Play
+          </button>
+          <button type="button" id="btn-enable-motion" class="studio-btn">
+            Enable Phone Shake
+          </button>
+        </div>
+
+        <div class="dialog-meta-links">
+          <a href="./llms.txt" target="_blank" rel="noopener">llms.txt</a>
+          <span aria-hidden="true">·</span>
+          <a href="./.well-known/agent-card.json" target="_blank" rel="noopener">agent-card</a>
+          <span aria-hidden="true">·</span>
+          <a href="https://h3manth.com" target="_blank" rel="noopener noreferrer">Hemanth HM</a>
+        </div>
+      </div>
+    </dialog>
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

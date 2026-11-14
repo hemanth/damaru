@@ -1,0 +1,24 @@
+# Damaru — Interactive 3D Hourglass Drum
+
+> Real-time 3D Indian Damaru hourglass drum built with Three.js PBR rendering, 360 Hz sub-stepped XPBD braided cord physics, Bessel-mode circular membrane deformation, and physical-modeling WebAudio synthesis.
+
+## Links
+- [Live App](/): Full-bleed 3D interactive Damaru stage
+- [Agent Card](/.well-known/agent-card.json): A2A v1.0.0 capability manifest
+- [MCP Server Card](/.well-known/mcp/server-card.json): SEP-1649 Model Context Protocol metadata
+- [Agent Skills Index](/.well-known/agent-skills/index.json): Playable Damaru skill specification
+- [OpenAPI Spec](/openapi.json): Declarative schema for programmatic inspection
+- [Author](https://h3manth.com): Hemanth HM
+
+## Acoustic & 3D Physics Architecture
+- **3D Geometry & PBR Materials**: Lathe-turned Indian Rosewood (`Sheesham`) resonator shell, antique brass collars, crimson-and-zari woven waist cloth, 32 V-laced braided cotton tension strands, and dual deformable polar goatskin membranes lit with `RoomEnvironment` IBL and ACES Filmic tone mapping.
+- **360 Hz XPBD Cord & Bead Solver**: Two 10-node inextensible braided cords with weighted lac striker beads (`goli`) integrated in world space and collided against an exact capped-hourglass signed distance function (SDF), transferring relative normal impact velocity and radial strike coordinates `(r/R, theta)` to both drumheads.
+- **Physical-Modeling WebAudio**: 7 circular-membrane Bessel modes (`J_mn` ratios `1.000, 1.593, 2.136, 2.295, 2.653, 2.917, 3.155`), asymmetric head tuning (`286 Hz` left / `301 Hz` right), coupled hourglass Helmholtz cavity resonance (`468 Hz`), Hertzian lac-bead leather snap transient, and continuous waist-squeeze pitch bending (`+5.3` semitones).
+
+## WebMCP & Browser Agent API (`window.damaruAgent`)
+Autonomous agents running in browser or WebMCP contexts can play and inspect the Damaru directly:
+- `window.damaruAgent.getState()` — Returns 3D orientation, angular velocity, cord tension, fundamental frequencies, and strike telemetry.
+- `window.damaruAgent.strike({ side: 'left' | 'right' | 'shell', velocity: 0.05..1.0, radial: 0.0..1.0 })` — Triggers a direct physical tap and 3D Bessel wave ripple.
+- `window.damaruAgent.shake({ frequencyHz: 7.5, intensity: 0.82, durationMs: 1400, tension: 0.2 })` — Oscillates the waist to whip both beaded cords across the heads.
+- `window.damaruAgent.setTension({ tension: 0.0..1.0 })` — Cinches the 32 V-laced tension cords and bends membrane pitch in real time.
+- `window.damaruAgent.playRhythm({ pattern: 'Dam . Dam Ta Roll .', bpm: 132, tension: 0.15 })` — Performs a structured rhythmic bol sequence.

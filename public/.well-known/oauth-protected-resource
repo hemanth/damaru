@@ -1,0 +1,6 @@
+{
+  "resource": "/",
+  "authorization_servers": [],
+  "scopes_supported": ["read", "play"],
+  "bearer_methods_supported": ["none"]
+}

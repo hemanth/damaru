@@ -1,0 +1,28 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Damaru 3D Acoustic Instrument WebMCP API",
+    "version": "1.0.0",
+    "description": "Client-side WebMCP & browser-runtime control specification for the 3D Damaru hourglass drum."
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Interactive 3D Damaru stage (supports Accept: text/markdown negotiation)",
+        "responses": {
+          "200": {
+            "description": "HTML 3D WebGL stage or Markdown documentation when Accept: text/markdown is requested"
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "summary": "LLM-ready summary and WebMCP runtime usage guide",
+        "responses": {
+          "200": { "description": "Plaintext Markdown specification" }
+        }
+      }
+    }
+  }
+}

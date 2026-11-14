@@ -1,0 +1,15 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
+  "name": "damaru-webmcp",
+  "version": "1.0.0",
+  "description": "In-browser WebMCP tools for playing and inspecting the 3D Damaru hourglass drum.",
+  "transport": {
+    "type": "webmcp",
+    "endpoint": "/"
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": true,
+    "prompts": false
+  }
+}

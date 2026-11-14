@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "skills": [
+    {
+      "name": "play-damaru",
+      "description": "Play, shake, pitch-bend, and perform Indian percussion rhythms on the interactive 3D Damaru.",
+      "entrypoint": "/.well-known/agent-skills/play-damaru/SKILL.md",
+      "sha256": "e50947c3ea9522863b9d6aa55a1d13bb8da986792a84f108f0daca4bbce33ffb"
+    }
+  ]
+}

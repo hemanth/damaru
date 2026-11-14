@@ -1,0 +1,71 @@
+{
+  "$schema": "https://a2a-protocol.org/schemas/agent-card/v1.0.0.json",
+  "schemaVersion": "1.0.0",
+  "name": "Damaru 3D Instrument Agent",
+  "description": "Playable 3D Indian Damaru hourglass drum with XPBD braided striker cords, Bessel-mode circular membrane physics, and WebMCP control tools.",
+  "url": "/",
+  "version": "1.0.0",
+  "capabilities": {
+    "tools": [
+      {
+        "name": "get_damaru_state",
+        "description": "Inspect 3D Damaru orientation, angular velocity, cord tension, fundamental pitch (Hz), and strike counters.",
+        "parameters": { "type": "object", "properties": {} }
+      },
+      {
+        "name": "strike_damaru",
+        "description": "Tap left/right goatskin drumhead or wooden shell with velocity-matched physical modeling.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "side": { "type": "string", "enum": ["left", "right", "shell"] },
+            "velocity": { "type": "number" },
+            "radial": { "type": "number" }
+          }
+        }
+      },
+      {
+        "name": "shake_damaru",
+        "description": "Physically oscillate the 3D Damaru around its waist to whip both beaded cords across the drumheads.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "frequencyHz": { "type": "number" },
+            "intensity": { "type": "number" },
+            "durationMs": { "type": "number" },
+            "tension": { "type": "number" }
+          }
+        }
+      },
+      {
+        "name": "set_damaru_tension",
+        "description": "Cinch or release the V-laced waist cords to bend pitch up by up to +5.3 semitones.",
+        "parameters": {
+          "type": "object",
+          "properties": { "tension": { "type": "number" } },
+          "required": ["tension"]
+        }
+      },
+      {
+        "name": "play_damaru_rhythm",
+        "description": "Perform a rhythmic bol sequence (Dam, Dha, Du, Ta, Na, Rim, Roll, .) at a target BPM.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pattern": { "type": "string" },
+            "bpm": { "type": "number" },
+            "tension": { "type": "number" }
+          },
+          "required": ["pattern"]
+        }
+      }
+    ]
+  },
+  "communication": {
+    "preferredChannel": "webmcp",
+    "endpoints": {
+      "docs": "/llms.txt",
+      "openapi": "/openapi.json"
+    }
+  }
+}

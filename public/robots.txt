@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://damaru.h3manth.com/sitemap.xml

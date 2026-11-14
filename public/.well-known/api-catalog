@@ -1,0 +1,22 @@
+{
+  "linkset": [
+    {
+      "anchor": "/",
+      "rel": "service-desc",
+      "href": "/openapi.json",
+      "type": "application/json"
+    },
+    {
+      "anchor": "/",
+      "rel": "api-catalog",
+      "href": "/.well-known/api-catalog",
+      "type": "application/linkset+json"
+    },
+    {
+      "anchor": "/",
+      "rel": "describedby",
+      "href": "/llms.txt",
+      "type": "text/plain"
+    }
+  ]
+}
