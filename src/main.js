@@ -62,7 +62,7 @@ const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
   powerPreference: 'high-performance',
-  alpha: true
+  alpha: false
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -71,6 +71,21 @@ renderer.toneMappingExposure = 1.08;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
+
+// Studio radial backdrop rendered inside WebGL so canvas captures/screenshots match identically
+const bgCanvas = document.createElement('canvas');
+bgCanvas.width = 512;
+bgCanvas.height = 512;
+const bgCtx = bgCanvas.getContext('2d');
+const bgGrad = bgCtx.createRadialGradient(256, 225, 18, 256, 256, 360);
+bgGrad.addColorStop(0, '#1c1713');
+bgGrad.addColorStop(0.75, '#0b0a09');
+bgGrad.addColorStop(1, '#0b0a09');
+bgCtx.fillStyle = bgGrad;
+bgCtx.fillRect(0, 0, 512, 512);
+const bgTex = new THREE.CanvasTexture(bgCanvas);
+bgTex.colorSpace = THREE.SRGBColorSpace;
+scene.background = bgTex;
 
 const pmrem = new THREE.PMREMGenerator(renderer);
 const envTex = pmrem.fromScene(new RoomEnvironment(), 0.045).texture;
